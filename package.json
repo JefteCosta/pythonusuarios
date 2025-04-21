@@ -1,0 +1,40 @@
+{
+  "name": "pythonusuarios",
+  "version": "1.0.0",
+  "description": "cadastro de usuarios em lote para meetrox com python e selenium",
+  "main": "index.js",
+  "type": "module",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+     "commit": "cz"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/JefteCosta/pythonusuarios.git"
+
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/JefteCosta/pythonusuarios/issues"
+  },
+  "homepage": "https://github.com/JefteCosta/pythonusuarios#readme",
+  "devDependencies": {
+    "@commitlint/cli": "^19.8.0",
+    "@commitlint/config-conventional": "^19.8.0",
+    "commitizen": "^4.3.1",
+    "cz-conventional-changelog": "^3.3.0",
+    "husky": "^9.1.7"
+  },
+  "config": {
+    "commitizen": {
+      "path": "./node_modules/cz-conventional-changelog"
+    }
+  },
+  "husky": {
+    "hooks": {
+      "prepare-commit-msg": "exec < /dev/tty && npx cz --hook || true"
+    }
+  }
+}

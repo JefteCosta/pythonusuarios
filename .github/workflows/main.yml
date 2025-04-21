@@ -1,0 +1,44 @@
+on:
+  push:
+    branches:
+      - main
+permissions:
+  contents: write
+  pull-requests: write
+name: release-please-main
+jobs:
+  release-please:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: googleapis/release-please-action@v4
+        with:
+          release-type: node
+          # The short ref name of the branch or tag that triggered
+          #  the workflow run. For example, `main` or `1.x`
+          token: ${{ secrets.GITHUB_TOKEN }}
+          target-branch: ${{ github.ref_name }}
+          config-file: release-please-config.json
+      - uses: actions/checkout@v4
+      - name: tag major and minor versions
+        if: ${{ steps.release.outputs.release_created }}
+        run: |
+          git config user.name JefteCosta[bot]
+          git config user.email jefte@meetrox.ai
+          git remote add gh-token "https://${{ secrets.GITHUB_TOKEN }}@github.com/googleapis/release-please-action.git"
+          git tag -d v${{ steps.release.outputs.major }}-dev || true
+          git tag -d v${{ steps.release.outputs.major }}.${{ steps.release.outputs.minor }}-dev || true
+          git push origin :v${{ steps.release.outputs.major }}-dev || true
+          git push origin :v${{ steps.release.outputs.major }}.${{ steps.release.outputs.minor }}-dev || true
+          git tag -a v${{ steps.release.outputs.major }}-dev -m "Release v${{ steps.release.outputs.major }}-dev"
+          git tag -a v${{ steps.release.outputs.major }}.${{ steps.release.outputs.minor }}-dev -m "Release v${{ steps.release.outputs.major }}.${{ steps.release.outputs.minor }}-dev"
+          git push origin v${{ steps.release.outputs.major }}-dev
+          git push origin v${{ steps.release.outputs.major }}.${{ steps.release.outputs.minor }}-dev
+      - uses: googleapis/release-please-action@v4
+        id: release
+        with:
+          release-type: node
+      - name: Upload Release Artifact
+        if: ${{ steps.release.outputs.release_created }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: gh release upload ${{ steps.release.outputs.tag_name }} ./artifact/some-build-artifact.zip
